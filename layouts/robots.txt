@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Block low-value pages from crawl budget
+Disallow: /page/
+Disallow: /search/
+
+# Block taxonomy pagination
+Disallow: /tags/page/
+Disallow: /categories/page/
+Disallow: /topic/*/page/
+Disallow: /category/*/page/
+
+# Sitemaps
+Sitemap: {{ "sitemap.xml" | absURL }}

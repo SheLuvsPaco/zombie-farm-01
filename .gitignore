@@ -1,0 +1,55 @@
+# Hugo generated files
+public/
+resources/
+.hugo_build.lock
+
+# Python scripts - content generation (keep private)
+*.py
+__pycache__/
+*.pyc
+
+# Data files - keep private
+data.csv
+data_backup_*.csv
+groq_apikeys
+
+# SEO documentation (optional - comment out if you want these in repo)
+SEO-MASTER-PLAN.md
+LINK_BUILDING_OUTREACH.md
+RANK_TRACKING_SETUP.md
+refresh_queue.md
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sensitive files
+*.key
+*.pem
+.env
+secrets/
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+
+# Node modules (if any)
+node_modules/
+package-lock.json
+
+# CI/CD
+.vercel/
+.netlify/
