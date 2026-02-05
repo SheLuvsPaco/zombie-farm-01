@@ -1,4 +1,4 @@
-baseURL = 'https://toolcompare.io/'
+baseURL = 'https://zombie-farm-01.vercel.app/'
 languageCode = 'en-us'
 title = 'ToolCompare - Software Integration & Comparison Guides'
 theme = "PaperMod"
