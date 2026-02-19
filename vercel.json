@@ -1,0 +1,15 @@
+{
+  "buildCommand": "hugo --gc --minify && npx pagefind --site public",
+  "outputDirectory": "public",
+  "installCommand": "npm install -g hugo-extended",
+  "framework": null,
+  "git": {
+    "submodules": true
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/$1"
+    }
+  ]
+}

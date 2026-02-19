@@ -1,0 +1,139 @@
+baseURL = 'https://zombie-farm-01.vercel.app/'
+languageCode = 'en-us'
+title = 'ToolCompare - Software Integration & Comparison Guides'
+theme = "PaperMod"
+
+# SEO Optimization
+enableRobotsTXT = true
+enableSitemap = true
+
+# Pagination - more pages indexed
+[pagination]
+  pagerSize = 50
+
+# Taxonomies for better categorization
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+  series = "series"
+
+[params]
+    # Site basics
+    env = "production"
+    mainSections = ["posts"]
+    description = "Expert guides on software integrations, tool comparisons, troubleshooting, and feature reviews. Find the best tools for your tech stack in 2026."
+    keywords = ["software comparison", "tool integration", "SaaS guides", "API integration", "tech stack", "automation", "AI tools", "developer tools"]
+    author = "ToolCompare Team"
+
+    # SEO settings
+    ShowReadingTime = true
+    ShowShareButtons = true
+    ShowPostNavLinks = true
+    ShowBreadCrumbs = true
+    ShowCodeCopyButtons = true
+    ShowWordCount = true
+    ShowRssButtonInSectionTermList = true
+    ShowToc = true
+    TocOpen = false
+
+    # Better SEO
+    ShowFullTextinRSS = true
+    disableSpecial1stPost = false
+    disableScrollToTop = false
+    comments = false
+    hidemeta = false
+    hideSummary = false
+
+    # Open Graph / Social
+    images = ["images/og-default.png"]
+
+    # Home page info mode for better UX
+    [params.homeInfoParams]
+        Title = "Software Integration & Comparison Hub"
+        Content = "Expert guides to help you choose the right tools, set up integrations, and troubleshoot common issues. Updated for 2026."
+
+    # Search capability
+    [params.fuseOpts]
+        isCaseSensitive = false
+        shouldSort = true
+        location = 0
+        distance = 1000
+        threshold = 0.4
+        minMatchCharLength = 0
+        keys = ["title", "permalink", "summary", "content", "tags"]
+
+    # Schema.org settings for rich results
+    [params.schema]
+        publisherType = "Organization"
+        logo = "images/logo.png"
+
+    # Google Analytics & Search Console
+    [params.analytics.google]
+        SiteVerificationTag = "956fcF21qnJqTd_Xld63ISOYUgiTojL5Emc34jbYEvU"
+        gtag = "G-DXMF3XY973"
+
+# URL structure for better SEO
+[permalinks]
+    posts = "/:slug/"
+    tags = "/topic/:slug/"
+    categories = "/category/:slug/"
+
+# Sitemap configuration
+[sitemap]
+    changefreq = "weekly"
+    filename = "sitemap.xml"
+    priority = 0.6  # Default for articles (majority of content)
+
+# Output formats
+[outputs]
+    home = ["HTML", "RSS", "JSON"]
+    section = ["HTML", "RSS"]
+    taxonomy = ["HTML", "RSS"]
+    term = ["HTML", "RSS"]
+
+# Minify output for performance
+[minify]
+    disableCSS = false
+    disableHTML = false
+    disableJS = false
+    disableJSON = false
+    disableSVG = false
+    disableXML = false
+
+# Markup settings
+[markup]
+    [markup.highlight]
+        noClasses = false
+        lineNos = true
+    [markup.goldmark]
+        [markup.goldmark.renderer]
+            unsafe = true
+
+# Menu for navigation
+[menu]
+    [[menu.main]]
+        identifier = "menu-comparisons"
+        name = "Comparisons"
+        url = "/category/comparisons/"
+        weight = 10
+    [[menu.main]]
+        identifier = "menu-integrations"
+        name = "Integrations"
+        url = "/category/integrations/"
+        weight = 20
+    [[menu.main]]
+        identifier = "menu-troubleshooting"
+        name = "Troubleshooting"
+        url = "/category/troubleshootings/"
+        weight = 30
+    [[menu.main]]
+        identifier = "menu-search"
+        name = "Search"
+        url = "/search/"
+        pageRef = "search"
+        weight = 40
+    [[menu.main]]
+        identifier = "menu-tags"
+        name = "Topics"
+        url = "/tags/"
+        weight = 50

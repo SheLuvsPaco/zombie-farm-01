@@ -1,0 +1,642 @@
+<!-- Enhanced Search Page with Query Support -->
+<div class="tech-search-page">
+    <header class="tech-search-page-header">
+        <h1>
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            Search Results
+        </h1>
+        {{- if .Description }}
+        <p class="tech-search-page-description">{{ .Description }}</p>
+        {{- end }}
+    </header>
+
+    <div class="tech-search-page-input-wrapper">
+        <svg class="tech-search-page-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+            type="search"
+            id="pageSearchInput"
+            class="tech-search-page-input"
+            placeholder="Search for articles, guides, comparisons..."
+            aria-label="Search"
+            autocomplete="off"
+        >
+        <button id="clearSearchBtn" class="tech-search-clear-btn" style="display: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+
+    <div class="tech-search-page-content">
+        <aside class="tech-search-filters">
+            <div class="tech-search-filter-section">
+                <h3>Categories</h3>
+                <div class="tech-search-filter-list" id="categoryFilters">
+                    <label class="tech-search-filter-item">
+                        <input type="checkbox" value="Comparisons" checked>
+                        <span>Comparisons</span>
+                        <span class="count">--</span>
+                    </label>
+                    <label class="tech-search-filter-item">
+                        <input type="checkbox" value="Integrations" checked>
+                        <span>Integrations</span>
+                        <span class="count">--</span>
+                    </label>
+                    <label class="tech-search-filter-item">
+                        <input type="checkbox" value="Troubleshooting" checked>
+                        <span>Troubleshooting</span>
+                        <span class="count">--</span>
+                    </label>
+                    <label class="tech-search-filter-item">
+                        <input type="checkbox" value="Guides" checked>
+                        <span>Guides</span>
+                        <span class="count">--</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="tech-search-filter-section">
+                <h3>Popular Tags</h3>
+                <div class="tech-search-tag-cloud" id="popularTags">
+                    <!-- Tags will be populated dynamically -->
+                </div>
+            </div>
+        </aside>
+
+        <main class="tech-search-results-area">
+            <div class="tech-search-results-header">
+                <h2 id="resultsTitle">All Articles</h2>
+                <div class="tech-search-sort">
+                    <label>Sort by:</label>
+                    <select id="sortSelect">
+                        <option value="relevance">Relevance</option>
+                        <option value="date-newest">Newest First</option>
+                        <option value="date-oldest">Oldest First</option>
+                        <option value="title">Title A-Z</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="searchResultsContainer" class="tech-search-results-container">
+                <!-- Results will be populated dynamically -->
+                <div class="tech-search-loading-state">
+                    <div class="tech-spinner-large"></div>
+                    <p>Loading search index...</p>
+                </div>
+            </div>
+
+            <div class="tech-search-pagination" id="searchPagination" style="display: none;">
+                <button id="prevPageBtn" class="tech-search-page-btn" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    Previous
+                </button>
+                <span id="pageInfo">Page 1 of 1</span>
+                <button id="nextPageBtn" class="tech-search-page-btn" disabled>
+                    Next
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </main>
+    </div>
+</div>
+
+<style>
+    /* === Search Page Layout === */
+    .tech-search-page {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: var(--tech-space-2xl, 48px) var(--tech-space-lg, 24px);
+    }
+
+    .tech-search-page-header {
+        text-align: center;
+        margin-bottom: var(--tech-space-2xl, 48px);
+    }
+
+    .tech-search-page-header h1 {
+        font-family: var(--font-tech, 'Orbitron', sans-serif);
+        font-size: clamp(28px, 5vw, 42px);
+        font-weight: 700;
+        color: var(--tech-primary, #e8e8f0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--tech-space-md, 16px);
+        margin-bottom: var(--tech-space-md, 16px);
+    }
+
+    .tech-search-page-header h1 svg {
+        color: var(--tech-cyan-primary, #00fff5);
+    }
+
+    .tech-search-page-description {
+        font-family: var(--font-code, 'JetBrains Mono', monospace);
+        font-size: 14px;
+        color: var(--tech-secondary, #888898);
+    }
+
+    /* === Search Input === */
+    .tech-search-page-input-wrapper {
+        position: relative;
+        max-width: 700px;
+        margin: 0 auto var(--tech-space-2xl, 48px);
+        display: flex;
+        align-items: center;
+        background: var(--tech-bg-secondary, #12121a);
+        border: 2px solid var(--tech-border, #252532);
+        border-radius: var(--tech-radius-xl, 16px);
+        padding: var(--tech-space-md, 16px) var(--tech-space-lg, 24px);
+        transition: all var(--tech-transition-base, 250ms ease);
+    }
+
+    .tech-search-page-input-wrapper:focus-within {
+        border-color: var(--tech-cyan-primary, #00fff5);
+        box-shadow: 0 0 0 4px rgba(0, 255, 245, 0.1), var(--tech-shadow-glow, 0 0 20px rgba(0, 255, 245, 0.3));
+    }
+
+    .tech-search-page-icon {
+        color: var(--tech-tertiary, #3a3a4a);
+        margin-right: var(--tech-space-md, 16px);
+        flex-shrink: 0;
+    }
+
+    .tech-search-page-input-wrapper:focus-within .tech-search-page-icon {
+        color: var(--tech-cyan-primary, #00fff5);
+    }
+
+    .tech-search-page-input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        outline: none;
+        font-family: var(--font-code, 'JetBrains Mono', monospace);
+        font-size: 16px;
+        color: var(--tech-primary, #e8e8f0);
+    }
+
+    .tech-search-page-input::placeholder {
+        color: var(--tech-tertiary, #3a3a4a);
+    }
+
+    .tech-search-clear-btn {
+        background: transparent;
+        border: none;
+        color: var(--tech-tertiary, #3a3a4a);
+        cursor: pointer;
+        padding: var(--tech-space-sm, 8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--tech-radius-sm, 4px);
+        transition: all var(--tech-transition-fast, 150ms ease);
+    }
+
+    .tech-search-clear-btn:hover {
+        background: var(--tech-bg-tertiary, #1a1a24);
+        color: var(--tech-cyan-primary, #00fff5);
+    }
+
+    /* === Content Layout === */
+    .tech-search-page-content {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: var(--tech-space-2xl, 48px);
+        align-items: start;
+    }
+
+    /* === Filters Sidebar === */
+    .tech-search-filters {
+        position: sticky;
+        top: calc(var(--header-height, 60px) + var(--tech-space-lg, 24px));
+    }
+
+    .tech-search-filter-section {
+        background: var(--tech-bg-secondary, #12121a);
+        border: 1px solid var(--tech-border, #252532);
+        border-radius: var(--tech-radius-lg, 12px);
+        padding: var(--tech-space-lg, 24px);
+        margin-bottom: var(--tech-space-lg, 24px);
+    }
+
+    .tech-search-filter-section h3 {
+        font-family: var(--font-tech, 'Orbitron', sans-serif);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--tech-secondary, #888898);
+        margin: 0 0 var(--tech-space-md, 16px) 0;
+        padding-bottom: var(--tech-space-sm, 8px);
+        border-bottom: 1px solid var(--tech-border, #252532);
+    }
+
+    .tech-search-filter-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--tech-space-sm, 8px);
+    }
+
+    .tech-search-filter-item {
+        display: flex;
+        align-items: center;
+        gap: var(--tech-space-sm, 8px);
+        padding: var(--tech-space-sm, 8px);
+        border-radius: var(--tech-radius-sm, 4px);
+        cursor: pointer;
+        transition: background var(--tech-transition-fast, 150ms ease);
+    }
+
+    .tech-search-filter-item:hover {
+        background: var(--tech-bg-tertiary, #1a1a24);
+    }
+
+    .tech-search-filter-item input[type="checkbox"] {
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--tech-border, #252532);
+        border-radius: var(--tech-radius-sm, 4px);
+        cursor: pointer;
+        position: relative;
+        flex-shrink: 0;
+        transition: all var(--tech-transition-fast, 150ms ease);
+    }
+
+    .tech-search-filter-item input[type="checkbox"]:checked {
+        background: var(--tech-cyan-primary, #00fff5);
+        border-color: var(--tech-cyan-primary, #00fff5);
+    }
+
+    .tech-search-filter-item input[type="checkbox"]:checked::after {
+        content: '';
+        position: absolute;
+        left: 4px;
+        top: 1px;
+        width: 4px;
+        height: 8px;
+        border: solid var(--tech-bg, #0a0a0f);
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    .tech-search-filter-item span:first-of-type {
+        flex: 1;
+        font-family: var(--font-code, 'JetBrains Mono', monospace);
+        font-size: 13px;
+        color: var(--tech-primary, #e8e8f0);
+    }
+
+    .tech-search-filter-item .count {
+        font-family: var(--font-tech, 'Orbitron', sans-serif);
+        font-size: 11px;
+        color: var(--tech-tertiary, #3a3a4a);
+    }
+
+    /* === Tag Cloud === */
+    .tech-search-tag-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--tech-space-sm, 8px);
+    }
+
+    .tech-search-tag {
+        font-family: var(--font-code, 'JetBrains Mono', monospace);
+        font-size: 11px;
+        padding: var(--tech-space-sm, 8px) var(--tech-space-md, 16px);
+        background: var(--tech-bg-tertiary, #1a1a24);
+        border: 1px solid var(--tech-border, #252532);
+        border-radius: var(--tech-radius-full, 9999px);
+        color: var(--tech-secondary, #888898);
+        cursor: pointer;
+        transition: all var(--tech-transition-fast, 150ms ease);
+    }
+
+    .tech-search-tag:hover,
+    .tech-search-tag.active {
+        background: var(--tech-cyan-primary, #00fff5);
+        border-color: var(--tech-cyan-primary, #00fff5);
+        color: var(--tech-bg, #0a0a0f);
+    }
+
+    /* === Results Area === */
+    .tech-search-results-area {
+        min-width: 0;
+    }
+
+    .tech-search-results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--tech-space-lg, 24px);
+        padding-bottom: var(--tech-space-md, 16px);
+        border-bottom: 1px solid var(--tech-border, #252532);
+    }
+
+    .tech-search-results-header h2 {
+        font-family: var(--font-tech, 'Orbitron', sans-serif);
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--tech-primary, #e8e8f0);
+        margin: 0;
+    }
+
+    .tech-search-sort {
+        display: flex;
+        align-items: center;
+        gap: var(--tech-space-sm, 8px);
+    }
+
+    .tech-search-sort label {
+        font-family: var(--font-tech, 'Orbitron', sans-serif);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--tech-tertiary, #3a3a4a);
+    }
+
+    .tech-search-sort select {
+        font-family: var(--font-code, 'JetBrains Mono', monospace);
+        font-size: 13px;
+        padding: var(--tech-space-sm, 8px) var(--tech-space-md, 16px);
+        background: var(--tech-bg-secondary, #12121a);
+        border: 1px solid var(--tech-border, #252532);
+        border-radius: var(--tech-radius-sm, 4px);
+        color: var(--tech-primary, #e8e8f0);
+        cursor: pointer;
+        transition: border-color var(--tech-transition-fast, 150ms ease);
+    }
+
+    .tech-search-sort select:hover,
+    .tech-search-sort select:focus {
+        border-color: var(--tech-cyan-dim, #0099aa);
+        outline: none;
+    }
+
+    /* === Results Container === */
+    .tech-search-results-container {
+        display: flex;
+        flex-direction: column;
+        gap: var(--tech-space-md, 16px);
+    }
+
+    .tech-search-result-card {
+        background: var(--tech-bg-secondary, #12121a);
+        border: 1px solid var(--tech-border, #252532);
+        border-radius: var(--tech-radius-lg, 12px);
+        padding: var(--tech-space-lg, 24px);
+        transition: all var(--tech-transition-base, 250ms ease);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .tech-search-result-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 3px;
+        height: 0;
+        background: linear-gradient(180deg, var(--tech-cyan-primary), var(--tech-cyan-secondary));
+        transition: height var(--tech-transition-base, 250ms ease);
+    }
+
+    .tech-search-result-card:hover {
+        border-color: var(--tech-cyan-dim, #0099aa);
+        box-shadow: var(--tech-shadow-glow, 0 0 20px rgba(0, 255, 245, 0.3));
+        transform: translateY(-2px);
+    }
+
+    .tech-search-result-card:hover::before {
+        height: 100%;
+    }
+
+    .tech-search-result-card-header {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--tech-space-md, 16px);
+        margin-bottom: var(--tech-space-md, 16px);
+    }
+
+    .tech-search-result-card-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--tech-bg-tertiary, #1a1a24);
+        border: 1px solid var(--tech-border, #252532);
+        border-radius: var(--tech-radius-md, 8px);
+        flex-shrink: 0;
+        color: var(--tech-cyan-primary, #00fff5);
+    }
+
+    .tech-search-result-card-title {
+        flex: 1;
+    }
+
+    .tech-search-result-card-title a {
+        font-family: var(--font-tech, 'Orbitron', sans-serif);
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--tech-primary, #e8e8f0);
+        text-decoration: none;
+        transition: color var(--tech-transition-fast, 150ms ease);
+    }
+
+    .tech-search-result-card:hover .tech-search-result-card-title a {
+        color: var(--tech-cyan-primary, #00fff5);
+    }
+
+    .tech-search-result-card-category {
+        font-family: var(--font-tech, 'Orbitron', sans-serif);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--tech-cyan-dim, #0099aa);
+        margin-top: 4px;
+    }
+
+    .tech-search-result-card-excerpt {
+        font-family: var(--font-code, 'JetBrains Mono', monospace);
+        font-size: 14px;
+        color: var(--tech-secondary, #888898);
+        line-height: 1.6;
+        margin-bottom: var(--tech-space-md, 16px);
+    }
+
+    .tech-search-result-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: var(--tech-space-md, 16px);
+        border-top: 1px solid var(--tech-border-dim, #1a1a24);
+    }
+
+    .tech-search-result-card-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--tech-space-xs, 4px);
+    }
+
+    .tech-search-result-card-tag {
+        font-family: var(--font-tech, 'Orbitron', sans-serif);
+        font-size: 9px;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 4px 8px;
+        background: var(--tech-bg-tertiary, #1a1a24);
+        border-radius: var(--tech-radius-sm, 4px);
+        color: var(--tech-tertiary, #3a3a4a);
+    }
+
+    .tech-search-result-card-meta {
+        font-family: var(--font-code, 'JetBrains Mono', monospace);
+        font-size: 11px;
+        color: var(--tech-tertiary, #3a3a4a);
+    }
+
+    /* === Loading State === */
+    .tech-search-loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: var(--tech-space-3xl, 64px);
+        color: var(--tech-secondary, #888898);
+    }
+
+    .tech-spinner-large {
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--tech-border, #252532);
+        border-top-color: var(--tech-cyan-primary, #00fff5);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-bottom: var(--tech-space-md, 16px);
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* === Empty State === */
+    .tech-search-empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: var(--tech-space-3xl, 64px);
+        text-align: center;
+    }
+
+    .tech-search-empty-state svg {
+        width: 80px;
+        height: 80px;
+        color: var(--tech-tertiary, #3a3a4a);
+        margin-bottom: var(--tech-space-lg, 24px);
+        opacity: 0.5;
+    }
+
+    .tech-search-empty-state h3 {
+        font-family: var(--font-tech, 'Orbitron', sans-serif);
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--tech-primary, #e8e8f0);
+        margin: 0 0 var(--tech-space-sm, 8px) 0;
+    }
+
+    .tech-search-empty-state p {
+        font-family: var(--font-code, 'JetBrains Mono', monospace);
+        font-size: 14px;
+        color: var(--tech-secondary, #888898);
+        margin: 0;
+    }
+
+    /* === Pagination === */
+    .tech-search-pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: var(--tech-space-lg, 24px);
+        margin-top: var(--tech-space-2xl, 48px);
+        padding-top: var(--tech-space-lg, 24px);
+        border-top: 1px solid var(--tech-border, #252532);
+    }
+
+    .tech-search-page-btn {
+        font-family: var(--font-tech, 'Orbitron', sans-serif);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: var(--tech-space-md, 16px) var(--tech-space-lg, 24px);
+        background: var(--tech-bg-secondary, #12121a);
+        border: 1px solid var(--tech-border, #252532);
+        border-radius: var(--tech-radius-sm, 4px);
+        color: var(--tech-primary, #e8e8f0);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: var(--tech-space-sm, 8px);
+        transition: all var(--tech-transition-fast, 150ms ease);
+    }
+
+    .tech-search-page-btn:hover:not(:disabled) {
+        background: var(--tech-cyan-primary, #00fff5);
+        border-color: var(--tech-cyan-primary, #00fff5);
+        color: var(--tech-bg, #0a0a0f);
+        box-shadow: var(--tech-shadow-glow, 0 0 20px rgba(0, 255, 245, 0.3));
+    }
+
+    .tech-search-page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    #pageInfo {
+        font-family: var(--font-code, 'JetBrains Mono', monospace);
+        font-size: 13px;
+        color: var(--tech-secondary, #888898);
+    }
+
+    /* === Responsive === */
+    @media (max-width: 1024px) {
+        .tech-search-page-content {
+            grid-template-columns: 1fr;
+        }
+
+        .tech-search-filters {
+            position: static;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .tech-search-page {
+            padding: var(--tech-space-lg, 24px) var(--tech-space-md, 16px);
+        }
+
+        .tech-search-page-header h1 {
+            font-size: 24px;
+        }
+
+        .tech-search-results-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--tech-space-md, 16px);
+        }
+    }
+</style>

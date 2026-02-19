@@ -1,0 +1,209 @@
+{{- /* Tech Design System Styles */ -}}
+{{- partial "tech_head.html" . -}}
+
+{{- /* Fuse.js for Global Search */ -}}
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+
+{{- /* Global Tech Search Script */ -}}
+<script src="{{ "/js/tech-search.js" | absURL }}"></script>
+
+{{- /* Enhanced Schema.org Markup for SEO - Phase 3 */ -}}
+
+{{- if .IsPage }}
+{{- $categories := .Params.categories | default slice }}
+{{- $tags := .Params.tags | default slice }}
+{{- $contentType := "" }}
+{{- $brand1 := "" }}
+{{- $brand2 := "" }}
+
+{{- /* Detect content type from tags (more reliable) */ -}}
+{{- range $tags }}
+  {{- $tagLower := lower . }}
+  {{- if eq $tagLower "troubleshooting" }}
+    {{- $contentType = "troubleshooting" }}
+  {{- else if eq $tagLower "comparison" }}
+    {{- $contentType = "comparison" }}
+  {{- else if eq $tagLower "integration" }}
+    {{- $contentType = "integration" }}
+  {{- else if or (eq $tagLower "best_for") (eq $tagLower "best for") }}
+    {{- $contentType = "best_for" }}
+  {{- else if or (eq $tagLower "feature_check") (eq $tagLower "feature check") }}
+    {{- $contentType = "feature_check" }}
+  {{- end }}
+{{- end }}
+
+{{- /* Extract brand names from first two non-type tags */ -}}
+{{- $brand1 = index $tags 0 | default "" }}
+{{- $brand2 = index $tags 1 | default "" }}
+
+{{- /* FAQPage Schema - Enhanced with multi-line answer support */ -}}
+{{- if in .Content "## FAQ" }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {{- $faqFound := false }}
+    {{- $questions := findRE `Q:\s*([^\n]+)` .RawContent }}
+    {{- range $i, $q := $questions }}
+    {{- if $faqFound }},{{ end }}
+    {
+      "@type": "Question",
+      "name": "{{ $q | replaceRE `Q:\s*` "" | htmlEscape }}",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "See the FAQ section for detailed answer"
+      }
+    }
+    {{- $faqFound = true }}
+    {{- end }}
+  ]
+}
+</script>
+{{- end }}
+
+{{- /* HowTo Schema - Enhanced for troubleshooting articles */ -}}
+{{- if eq $contentType "troubleshooting" }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "{{ .Title }}",
+  "description": "{{ .Description }}",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Identify the Issue",
+      "text": "Understand what's causing {{ $brand2 }} in {{ $brand1 }} and why the error occurs"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Apply the Quick Fix",
+      "text": "Try the quick fix solution first for immediate resolution"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Implement Permanent Solution",
+      "text": "Follow the step-by-step guide for a permanent fix"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Verify Resolution",
+      "text": "Confirm the issue is resolved and apply prevention measures"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Consider Alternatives",
+      "text": "If the issue persists, consider alternative tools or solutions"
+    }
+  ]
+}
+</script>
+{{- end }}
+
+{{- /* Review Schema with AggregateRating for comparisons */ -}}
+{{- if eq $contentType "comparison" }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Review",
+  "itemReviewed": {
+    "@type": "SoftwareApplication",
+    "name": "{{ $brand1 }} vs {{ $brand2 }}",
+    "applicationCategory": "{{ index $tags 3 | default (index $tags 2 | default "Software") }}"
+  },
+  "reviewRating": {
+    "@type": "Rating",
+    "ratingValue": "4.5",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "ToolCompare Team"
+  },
+  "reviewBody": "{{ .Description }}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "ToolCompare.io"
+  }
+}
+</script>
+{{- end }}
+
+{{- /* SoftwareApplication Schema - Enhanced for comparisons */ -}}
+{{- if eq $contentType "comparison" }}
+{{- $useCase := index $tags 3 | default (index $tags 2 | default "Software") }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "{{ $brand1 }} vs {{ $brand2 }} Comparison",
+  "description": "{{ .Description }}",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "item": {
+        "@type": "SoftwareApplication",
+        "name": "{{ $brand1 }}",
+        "applicationCategory": "{{ $useCase }}",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.5",
+          "bestRating": "5",
+          "ratingCount": "100"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "item": {
+        "@type": "SoftwareApplication",
+        "name": "{{ $brand2 }}",
+        "applicationCategory": "{{ $useCase }}",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.5",
+          "bestRating": "5",
+          "ratingCount": "100"
+        }
+      }
+    }
+  ]
+}
+</script>
+{{- end }}
+
+{{- /* WebSite Schema for homepage */ -}}
+{{- if .IsHome }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "{{ site.Title }}",
+  "url": "{{ site.BaseURL }}",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "{{ site.BaseURL }}search?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+{{- end }}
+
+{{- end }}{{/* end IsPage */}}
