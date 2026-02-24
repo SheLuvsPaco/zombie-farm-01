@@ -1,5 +1,8 @@
-+++
-title = "Search"
-layout = "search"
-description = "Search through our extensive library of software integration guides, tool comparisons, and troubleshooting articles."
-+++
+---
+title: "Search Results"
+layout: "search"
+url: "/search/"
+summary: "Search across all articles"
+sitemap:
+  priority: 0.1
+---

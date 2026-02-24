@@ -1,7 +1,8 @@
 baseURL = 'https://zombie-farm-01.vercel.app/'
 languageCode = 'en-us'
-title = 'ToolCompare - Software Integration & Comparison Guides'
+title = 'Zombie Farm'
 theme = "PaperMod"
+timeout = "300000ms"
 
 # SEO Optimization
 enableRobotsTXT = true

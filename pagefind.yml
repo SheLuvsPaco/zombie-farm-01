@@ -1,0 +1,8 @@
+site: public
+output_path: public/pagefind
+root_selector: article
+exclude_selectors:
+  - ".nav-menu"
+  - ".site-footer"
+  - ".toc"
+verbose: false
